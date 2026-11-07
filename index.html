@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>PPLUL Iron Tracker</title>
+  
+  <!-- PWA & Mobile Web App Meta -->
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PPLUL Iron">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top App Header -->
+  <header class="app-header">
+    <div class="brand-container">
+      <img src="icon-192.png" alt="PPLUL Logo" class="brand-logo">
+      <div>
+        <div class="brand-title">PPLUL IRON</div>
+        <div class="brand-subtitle">PROGRESSIVE OVERLOAD</div>
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <!-- Rest Timer Toggle Pill -->
+      <button id="header-timer-btn" class="header-timer-btn" title="Toggle Rest Timer">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span id="header-timer-display">Rest</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- TAB 1: WORKOUT (ACTIVE WORKOUT & TODAY'S LIFTS) -->
+    <section id="tab-workout" class="tab-view active">
+      
+      <!-- Day / Routine Banner -->
+      <div class="routine-banner">
+        <div class="routine-day-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span id="current-day-label">Monday • Push Day</span>
+        </div>
+        
+        <div class="routine-title-row">
+          <h1 id="routine-name-title" class="routine-name">Push Day</h1>
+          <button id="btn-switch-routine" class="routine-selector-btn">Switch Routine ▾</button>
+        </div>
+        <p id="routine-muscles-text" class="routine-muscles">Chest, Shoulders & Triceps Focus</p>
+      </div>
+
+      <!-- Quick Routine Filter Pills -->
+      <div class="split-pills" id="routine-quick-pills">
+        <button class="split-pill active" data-routine="push">Push (Mon)</button>
+        <button class="split-pill" data-routine="pull">Pull (Tue)</button>
+        <button class="split-pill" data-routine="legs">Legs (Wed)</button>
+        <button class="split-pill" data-routine="upper">Upper (Fri)</button>
+        <button class="split-pill" data-routine="lower">Lower (Sat)</button>
+      </div>
+
+      <!-- Draft Recovery Alert -->
+      <div id="draft-recovery-alert"></div>
+
+      <!-- Workout Exercises Container -->
+      <div id="workout-exercises-list">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <!-- Add Exercise to Current Session Button -->
+      <button id="btn-add-exercise-trigger" class="btn-add-exercise">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add Another Exercise
+      </button>
+
+      <!-- Workout Session Footer -->
+      <div class="workout-footer">
+        <button id="btn-finish-workout" class="btn-finish-workout">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          Finish & Save Workout
+        </button>
+        <button id="btn-reset-current-workout" class="btn-reset-workout">Reset Inputs</button>
+      </div>
+
+    </section>
+
+    <!-- TAB 2: SPLIT SCHEDULE (PPLUL 7-DAY SPLIT) -->
+    <section id="tab-split" class="tab-view">
+      <div style="margin-bottom: 14px;">
+        <h2 style="font-size: 1.3rem; font-weight: 800;">PPLUL Split Schedule</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">5 workout days + 2 rest days for maximum progressive overload recovery.</p>
+      </div>
+
+      <div class="split-grid" id="split-grid-container">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 3: WORKOUT HISTORY -->
+    <section id="tab-history" class="tab-view">
+      <div style="margin-bottom: 14px;">
+        <h2 style="font-size: 1.3rem; font-weight: 800;">Workout History</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">All your logged sessions, weights, reps, and overload achievements.</p>
+      </div>
+
+      <!-- Monthly Excel Export Banner -->
+      <div class="excel-export-banner">
+        <div class="excel-export-info">
+          <div class="excel-export-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color: var(--accent-emerald);">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="8" y1="13" x2="16" y2="13"></line>
+              <line x1="8" y1="17" x2="16" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Export Progress to Excel / Sheets</span>
+          </div>
+          <div class="excel-export-desc">Download past month of sets, weights, reps & est. 1RM as a formatted Excel spreadsheet (.csv).</div>
+        </div>
+        <div class="excel-export-actions">
+          <button id="btn-history-export-month" class="btn-excel-export" title="Export past 30 days to Excel (.csv)">
+            <span>📊 Past 30 Days</span>
+          </button>
+          <button id="btn-history-export-all" class="btn-excel-export-secondary" title="Export all logged workouts to Excel (.csv)">
+            <span>📈 All Time</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="history-filter-bar">
+        <button class="split-pill active" data-history-filter="all">All</button>
+        <button class="split-pill" data-history-filter="push">Push</button>
+        <button class="split-pill" data-history-filter="pull">Pull</button>
+        <button class="split-pill" data-history-filter="legs">Legs</button>
+        <button class="split-pill" data-history-filter="upper">Upper</button>
+        <button class="split-pill" data-history-filter="lower">Lower</button>
+      </div>
+
+      <div id="history-logs-container">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 4: ANALYTICS & PRs -->
+    <section id="tab-analytics" class="tab-view">
+      <div style="margin-bottom: 14px;">
+        <h2 style="font-size: 1.3rem; font-weight: 800;">Progress & PR Tracker</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Visual progression curves and personal records for each lift.</p>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Select Exercise to Track:</label>
+          <input type="text" id="analytics-search-input" class="modal-input" placeholder="🔍 Search lift..." style="margin-bottom: 8px; padding: 8px 12px; font-size: 0.85rem;" autocomplete="off">
+          <select id="analytics-exercise-select" class="chart-select">
+            <!-- Populated dynamically -->
+          </select>
+
+          <!-- Metric & Unit Toggles -->
+          <div class="analytics-toggle-group" id="analytics-metric-toggles">
+            <button class="analytics-toggle-btn active" data-metric="weight">Weight / Load</button>
+            <button class="analytics-toggle-btn" data-metric="1rm">Est. 1RM</button>
+            <button class="analytics-toggle-btn" data-metric="reps">Best Reps</button>
+          </div>
+        </div>
+
+        <!-- SVG Progression Chart -->
+        <div class="svg-chart-container" id="svg-chart-wrapper">
+          <svg id="exercise-progress-chart" class="svg-chart"></svg>
+        </div>
+
+        <div class="chart-stat-row">
+          <div class="stat-box">
+            <div id="stat-max-weight" class="stat-value">--</div>
+            <div id="stat-label-1" class="stat-label">Max Weight</div>
+          </div>
+          <div class="stat-box">
+            <div id="stat-best-reps" class="stat-value">--</div>
+            <div id="stat-label-2" class="stat-label">Best Reps</div>
+          </div>
+          <div class="stat-box">
+            <div id="stat-total-sessions" class="stat-value">--</div>
+            <div id="stat-label-3" class="stat-label">Sessions</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 10px; color: #fff;">🏆 Personal Records (PR) Board</h3>
+        <div class="pr-grid" id="pr-records-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: SETTINGS & APK GUIDE -->
+    <section id="tab-settings" class="tab-view">
+      <div style="margin-bottom: 14px;">
+        <h2 style="font-size: 1.3rem; font-weight: 800;">Settings & Device Sync</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Run as standalone mobile app and manage your local data.</p>
+      </div>
+
+      <!-- Mobile Connection Banner -->
+      <div class="settings-group">
+        <div class="settings-group-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+          Open & Install on Mobile
+        </div>
+        
+        <div class="ip-banner">
+          <div>Your phone can connect directly via Wi-Fi:</div>
+          <div class="ip-link" id="mobile-ip-link">http://192.168.100.89/gym/</div>
+          <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 4px;">Make sure your mobile phone is on the same Wi-Fi network.</div>
+          
+          <!-- Live QR Code for instant phone scanning -->
+          <div style="margin-top: 10px; display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 6px;">Scan with phone camera to open:</div>
+            <div id="settings-qrcode-box" style="background: #ffffff; padding: 10px; border-radius: 10px; display: inline-block;"></div>
+          </div>
+        </div>
+
+        <!-- Native APK Direct Download Card -->
+        <div class="apk-download-box" style="margin-top: 14px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 12px; padding: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <div>
+              <div style="font-weight: 800; font-size: 0.95rem; color: #4ade80; display: flex; align-items: center; gap: 6px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+                Android APK Package
+              </div>
+              <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 3px;">
+                Standalone Android app. Direct install on your mobile phone without browser address bar.
+              </div>
+            </div>
+            <a href="pplul-tracker.apk" download="pplul-tracker.apk" class="btn-apk-dl">
+              ⬇ Download APK
+            </a>
+          </div>
+        </div>
+
+        <button id="btn-show-ios-guide" class="settings-btn" style="margin-top: 12px; border-left: 3px solid #38bdf8;">
+          <span>🍎 How to Install on iPhone (iOS)</span>
+          <span>➔</span>
+        </button>
+
+        <button id="btn-show-install-guide" class="settings-btn">
+          <span>🤖 How to Install on Android Phone</span>
+          <span>➔</span>
+        </button>
+
+        <button id="btn-show-apk-guide" class="settings-btn">
+          <span>📦 Android APK Details & Direct Install</span>
+          <span>➔</span>
+        </button>
+      </div>
+
+      <!-- Backup and Restore Data -->
+      <div class="settings-group">
+        <div class="settings-group-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Data Backup & Spreadsheet Exports
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">Export formatted workout logs to Excel or backup your database locally.</p>
+        
+        <div style="margin: 6px 0 6px 0; font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase;">
+          📊 Spreadsheet Exports (Excel / Google Sheets)
+        </div>
+
+        <button id="btn-export-excel-month" class="settings-btn" style="border-left: 3px solid var(--accent-emerald);">
+          <span>📊 Export Past 30 Days to Excel (.csv)</span>
+          <span style="color: var(--accent-emerald); font-weight: 700; font-size: 0.8rem;">Excel / Sheets</span>
+        </button>
+
+        <button id="btn-export-excel-all" class="settings-btn">
+          <span>📈 Export All-Time Workouts to Excel (.csv)</span>
+          <span style="color: var(--text-secondary); font-size: 0.8rem;">Full History</span>
+        </button>
+
+        <div style="margin: 14px 0 6px 0; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+          💾 Full Database JSON Backup
+        </div>
+
+        <button id="btn-export-backup" class="settings-btn">
+          <span>💾 Export Workout Database (JSON)</span>
+          <span>Download</span>
+        </button>
+
+        <button id="btn-import-backup-trigger" class="settings-btn">
+          <span>📥 Restore Database from Backup</span>
+          <span>Upload</span>
+        </button>
+        <input type="file" id="import-file-input" accept=".json" style="display: none;">
+
+        <button id="btn-reset-seed-data" class="settings-btn" style="color: var(--accent-amber); margin-top: 8px;">
+          <span>🔄 Reload Initial Workout Notes (Seed Data)</span>
+          <span>Reset</span>
+        </button>
+
+        <button id="btn-clear-all-data" class="settings-btn" style="color: var(--accent-rose);">
+          <span>🗑️ Clear All Stored Data</span>
+          <span>Wipe</span>
+        </button>
+      </div>
+
+      <!-- App Info -->
+      <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem; margin-top: 20px;">
+        PPLUL Iron Progressive Overload Tracker v1.0<br>
+        100% Offline Capable • Built for Progressive Overload
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Floating Rest Timer Widget -->
+  <aside id="floating-timer" class="floating-timer-bar">
+    <div class="timer-left">
+      <div>
+        <div class="timer-label">Rest Timer</div>
+        <div id="floating-timer-digits" class="timer-digits">01:30</div>
+      </div>
+    </div>
+    <div class="timer-presets">
+      <button class="timer-preset-btn" data-time="60">+60s</button>
+      <button class="timer-preset-btn" data-time="90">+90s</button>
+      <button class="timer-preset-btn" data-time="120">+2m</button>
+      <button id="btn-timer-toggle-pause" class="timer-preset-btn" style="background: var(--accent-amber); color: #0f172a;">Pause</button>
+    </div>
+    <button id="btn-close-timer" class="timer-close-btn" title="Dismiss Timer">✕</button>
+  </aside>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-tab="tab-workout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 4v16M18 4v16M2 8h4M18 8h4M2 16h4M18 16h4M6 12h12"></path>
+      </svg>
+      <span class="nav-label">Workout</span>
+    </button>
+
+    <button class="nav-item" data-tab="tab-split">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      <span class="nav-label">Split</span>
+    </button>
+
+    <button class="nav-item" data-tab="tab-history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 14 14"></polyline>
+      </svg>
+      <span class="nav-label">History</span>
+    </button>
+
+    <button class="nav-item" data-tab="tab-analytics">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+      <span class="nav-label">PR & Graph</span>
+    </button>
+
+    <button class="nav-item" data-tab="tab-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span class="nav-label">Settings</span>
+    </button>
+  </nav>
+
+  <!-- MODAL: ADD / SEARCH EXERCISE -->
+  <div id="modal-add-exercise" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Exercise Library</h3>
+        <button class="modal-close-btn" data-close-modal="modal-add-exercise">✕</button>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <input type="text" id="exercise-search-input" class="modal-input" placeholder="🔍 Search exercise (e.g. Squat, Incline, Row)..." autocomplete="off">
+
+      <!-- Muscle Category Filters -->
+      <div class="search-filter-pills" id="search-category-pills">
+        <button class="search-filter-pill active" data-muscle="all">All</button>
+        <button class="search-filter-pill" data-muscle="Chest">Chest</button>
+        <button class="search-filter-pill" data-muscle="Back">Back</button>
+        <button class="search-filter-pill" data-muscle="Shoulders">Shoulders</button>
+        <button class="search-filter-pill" data-muscle="Legs">Legs</button>
+        <button class="search-filter-pill" data-muscle="Arms">Arms</button>
+      </div>
+
+      <!-- Search Results / Exercise List -->
+      <div id="search-library-results" class="search-library-list">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <!-- Custom Exercise Create Toggle -->
+      <div id="custom-exercise-toggle" class="custom-create-prompt">
+        <span>+ Can't find it? Create custom exercise</span>
+        <span>▾</span>
+      </div>
+
+      <!-- Collapsible Custom Form -->
+      <div id="custom-exercise-form" style="display: none;" class="custom-exercise-panel">
+        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">Exercise Name</label>
+        <input type="text" id="new-ex-name" class="modal-input" placeholder="e.g. Romanian Deadlift" autocomplete="off">
+        
+        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">Muscle Group / Category</label>
+        <select id="new-ex-category" class="modal-input">
+          <option value="Chest">Chest</option>
+          <option value="Back">Back</option>
+          <option value="Shoulders">Shoulders</option>
+          <option value="Biceps">Biceps</option>
+          <option value="Triceps">Triceps</option>
+          <option value="Legs">Legs / Quads</option>
+          <option value="Hamstrings">Hamstrings</option>
+          <option value="Calves">Calves</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">Default Weight Unit</label>
+        <select id="new-ex-unit" class="modal-input">
+          <option value="kgs">kgs</option>
+          <option value="plates">plates</option>
+          <option value="kgs ES">kgs ES (Each Side)</option>
+          <option value="lbs">lbs</option>
+        </select>
+
+        <button id="btn-save-new-exercise" class="modal-btn-primary">Add Custom Exercise</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CELEBRATION / WORKOUT COMPLETED -->
+  <div id="modal-celebration" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Session Complete!</h3>
+        <button class="modal-close-btn" data-close-modal="modal-celebration">✕</button>
+      </div>
+      <div class="celebration-box">
+        <div class="celebration-icon">🔥💪</div>
+        <div class="celebration-title">Great Overload!</div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 6px;">Workout saved successfully to your phone's storage.</p>
+        
+        <div class="celebration-stats">
+          <div>
+            <div id="summary-exercises-count" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-amber);">0</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Exercises</div>
+          </div>
+          <div>
+            <div id="summary-sets-count" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-emerald);">0</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Total Sets</div>
+          </div>
+          <div>
+            <div id="summary-prs-count" style="font-size: 1.3rem; font-weight: 800; color: #38bdf8;">0</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">PRs / Gains</div>
+          </div>
+        </div>
+
+        <button class="modal-btn-primary" data-close-modal="modal-celebration">Keep Grinding</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INSTALL ON IPHONE (iOS SAFARI) -->
+  <div id="modal-ios-guide" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🍎 Install on iPhone (iOS)</h3>
+        <button class="modal-close-btn" data-close-modal="modal-ios-guide">✕</button>
+      </div>
+      <div style="font-size: 0.88rem; line-height: 1.6; color: var(--text-secondary);">
+        <p style="margin-bottom: 12px; color: #fff;">
+          Apple does <b>not</b> allow outside APK or sideloaded apps, but iOS has official built-in support to install this directly from Safari as a native full-screen app:
+        </p>
+        
+        <ol style="padding-left: 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
+          <li><b>Open Safari</b>: Open the default <b>Safari</b> browser on your iPhone (it must be Safari, not Chrome, because Apple only gives Home Screen install rights to Safari).</li>
+          <li><b>Open the App</b>: Open <b class="current-app-url" style="color: var(--accent-amber); word-break: break-all;">https://rsthoryt2-cmd.github.io/gym-tracker/</b> or scan the QR code in the Settings tab with your iPhone Camera.</li>
+          <li><b>Tap Share Button</b>: Tap the <b>Share icon</b> at the bottom center of Safari (the square box with an arrow pointing up ⎋ / ⬆).</li>
+          <li><b>Add to Home Screen</b>: Scroll down the share sheet and tap <b>"Add to Home Screen"</b> (icon with a plus sign ⊞).</li>
+          <li><b>Confirm Add</b>: The app name will show <i>"PPLUL Iron"</i> with the custom gym icon. Tap <b>Add</b> in the top right corner.</li>
+          <li><b>Launch Fullscreen</b>: Open the new <b>Iron PPLUL</b> app from your iPhone home screen! It opens completely full screen with <b>no Safari browser bars</b>, works 100% offline at the gym, and saves all your workouts directly inside your iPhone.</li>
+        </ol>
+
+        <button class="modal-btn-primary" data-close-modal="modal-ios-guide" style="width: 100%;">Got It</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INSTALL ON ANDROID PHONE (PWA) -->
+  <div id="modal-install-guide" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Install on Android Phone</h3>
+        <button class="modal-close-btn" data-close-modal="modal-install-guide">✕</button>
+      </div>
+      <div style="font-size: 0.88rem; line-height: 1.6; color: var(--text-secondary);">
+        <p style="margin-bottom: 10px;">You can run this as a 100% native-feeling app on your mobile phone without needing an app store:</p>
+        
+        <ol style="padding-left: 20px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px;">
+          <li>Open <b>Chrome</b> or <b>Brave</b> on your phone.</li>
+          <li>Go to: <b class="current-app-url" style="color: var(--accent-amber); word-break: break-all;">https://rsthoryt2-cmd.github.io/gym-tracker/</b></li>
+          <li>Tap the <b>three dots menu (⋮)</b> in the top right corner of Chrome.</li>
+          <li>Tap <b>"Install App"</b> or <b>"Add to Home screen"</b>.</li>
+          <li>Tap <b>Install</b>. The app icon will appear directly on your Android home screen and app drawer!</li>
+          <li>It opens full-screen without any browser borders, works <b>100% offline</b> at the gym, and saves all data on your phone!</li>
+        </ol>
+
+        <button class="modal-btn-primary" data-close-modal="modal-install-guide">Got It</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: APK GUIDE & INSTALLATION -->
+  <div id="modal-apk-guide" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📦 Android APK Installation</h3>
+        <button class="modal-close-btn" data-close-modal="modal-apk-guide">✕</button>
+      </div>
+      <div style="font-size: 0.88rem; line-height: 1.6; color: var(--text-secondary);">
+        <p style="margin-bottom: 12px; color: #fff;">
+          A standalone Android APK installer (<b>pplul-tracker.apk</b>) is ready for direct installation on your mobile phone:
+        </p>
+        
+        <ol style="padding-left: 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
+          <li><b>Download</b>: Tap the green <b>"⬇ Download APK"</b> button in Settings, or visit <code>http://192.168.100.89/gym/pplul-tracker.apk</code> in your phone's browser.</li>
+          <li><b>Open</b>: When the download finishes, tap the notification or open the file from your phone's <b>Downloads</b> folder.</li>
+          <li><b>Permissions</b>: If Android asks <i>"Allow from this source"</i> (Install Unknown Apps), toggle it to <b>Allow</b>.</li>
+          <li><b>Install</b>: Tap <b>Install</b>. The app will be placed directly on your phone's home screen with the Iron PPLUL icon!</li>
+          <li><b>100% Offline</b>: Once installed, it runs completely offline with no internet needed, saving all your lifts, PRs, and notes locally.</li>
+        </ol>
+
+        <a href="pplul-tracker.apk" download="pplul-tracker.apk" class="btn-apk-dl" style="width: 100%; justify-content: center; margin-bottom: 10px; padding: 12px;">
+          ⬇ Download pplul-tracker.apk Now
+        </a>
+
+        <button class="modal-btn-secondary" data-close-modal="modal-apk-guide" style="width: 100%;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code & Application Scripts -->
+  <script src="qrcode.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
